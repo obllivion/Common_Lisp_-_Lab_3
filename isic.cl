@@ -1,0 +1,33 @@
+(defun disjoint-path (graf start cilj)
+  (cond ((null graf) '())
+        (:else (let* ((put1 (nadji-put graf start cilj '()))
+                      (graf1 (ocisti graf (cdr (reverse (cdr put1))))))
+                 (cond ((null put1) '())
+                  (:else (cons put1 (disjoint-path graf1 start cilj))))))))
+
+(defun ocisti (graf lista)
+    (cond ((null graf) '())
+        ((member (caar graf) lista) (ocisti (cdr graf) lista))
+          (:else (cons (car graf) (ocisti (cdr graf) lista)))))
+
+(defun nadji-put (graf l cilj cvorovi)
+  (cond ((null l) '())
+        ((equal (car l) cilj) (list cilj))
+        (t(let* ((cvorovi1 (append (list (car l)) cvorovi))
+                 (potomci1 (dodaj-potomke graf (car l) (append (cdr l) cvorovi)))
+                 (l1 (append (cdr l) potomci1))
+                 (nadjeni-put (nadji-put graf l1 cilj cvorovi1)))
+            (cond ((null nadjeni-put) '())
+                  ((member (car nadjeni-put) potomci1) (cons (car l) nadjeni-put))
+                  (:else nadjeni-put))))))
+
+
+(defun dodaj-potomke (graf cvor cvorovi)
+  (cond ((null graf) '())
+        ((equal (caar graf) cvor) (novi-cvorovi (cadar graf) cvorovi))
+        (t(dodaj-potomke (cdr graf) cvor cvorovi))))
+
+(defun novi-cvorovi (potomci cvorovi)
+  (cond ((null potomci) '())
+        ((member (car potomci) cvorovi) (novi-cvorovi (cdr potomci) cvorovi))
+        (t(cons (car potomci) (novi-cvorovi (cdr potomci) cvorovi)))))

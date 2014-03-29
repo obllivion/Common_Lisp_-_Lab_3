@@ -1,0 +1,27 @@
+(defun pozovi (graf)
+  (cond ((null graf) 0)
+        (:else(let* ((cvorovi1 (disjoint graf (list (caar graf) ) '()))
+                     (graf1 (razlika graf cvorovi1)))
+                (1+ (pozovi graf1))))))
+
+(defun disjoint (graf l cvorovi)
+  (cond ((null l) cvorovi)
+        (t(let* ((cvorovi1 (append cvorovi (list (car l))))
+                 (potomci1 (dodaj-potomke graf (car l) (append (cdr l) cvorovi1)))
+                 (l1 (append (cdr l) potomci1)))
+            (disjoint graf l1 cvorovi1)))))
+
+(defun dodaj-potomke (graf cvor cvorovi)
+  (cond ((null graf) '())
+        ((equal (caar graf) cvor) (novi-cvorovi (cadar graf) cvorovi))
+        (:else (dodaj-potomke (cdr graf) cvor cvorovi))))
+
+(defun novi-cvorovi (potomci cvorovi)
+  (cond ((null potomci) '())
+        ((member (car potomci) cvorovi) (novi-cvorovi (cdr potomci) cvorovi))
+        (:else (cons (car potomci) (novi-cvorovi (cdr potomci) cvorovi)))))
+
+(defun razlika (graf cvorovi)
+  (cond ((null graf) '())
+        ((member (caar graf) cvorovi) (razlika (cdr graf) cvorovi))
+        (t(cons (car graf) (razlika (cdr graf) cvorovi)))))
